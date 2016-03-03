@@ -1,0 +1,26 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+CLK_FREQ	./posix_time_cnt.sv	/^  parameter CLK_FREQ = 50$/;"	a
+ST_HR	./posix_time_watches.sv	/^  parameter ST_HR  = 0$/;"	a
+ST_MIN	./posix_time_watches.sv	/^  parameter ST_MIN = 0,$/;"	a
+hour_o	./posix_time_watches.sv	/^  output logic [$clog2(23)-1:0] hour_o,$/;"	v
+last_tact	./posix_time_watches.sv	/^logic                  last_tact;$/;"	v
+last_tact_w	./posix_time_cnt.sv	/^logic                                last_tact_w;$/;"	v
+min	./posix_time_watches.sv	/^logic [$clog2(59)-1:0] min;$/;"	v
+min_o	./posix_time_watches.sv	/^  output logic [$clog2(59)-1:0] min_o,$/;"	v
+posix_time_cnt	./posix_time_cnt.sv	/^module posix_time_cnt #($/;"	m
+posix_time_watches	./posix_time_watches.sv	/^module posix_time_watches #($/;"	m
+sec	./posix_time_watches.sv	/^logic [$clog2(59)-1:0] sec;$/;"	v
+sec_blnk_o	./posix_time_watches.sv	/^  output logic                  sec_blnk_o,$/;"	v
+sec_o	./posix_time_cnt.sv	/^  output logic [$clog2( 59 )-1:0] sec_o,$/;"	v
+sec_o	./posix_time_watches.sv	/^  output logic [$clog2(59)-1:0] sec_o$/;"	v
+tacts_cnt	./posix_time_cnt.sv	/^logic [$clog2( CLK_FREQ*(10**6) )-1:0] tacts_cnt;$/;"	v
+user_hour	./posix_time_watches.sv	/^logic [$clog2(23)-1:0] user_hour;$/;"	v
+user_hour_en	./posix_time_watches.sv	/^logic                  user_hour_en;$/;"	v
+user_min	./posix_time_watches.sv	/^logic [$clog2(59)-1:0] user_min;$/;"	v
+user_min_en	./posix_time_watches.sv	/^logic                  user_min_en;$/;"	v
+user_time_en	./posix_time_watches.sv	/^logic                  user_time_en;$/;"	v

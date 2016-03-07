@@ -1,5 +1,6 @@
 module alarm_clock #(
 
+  parameter GMT             = 3,
   parameter ALARM_TIME_SEC  = 10,
   parameter SNOOZE_TIME_SEC = 5
  
@@ -17,7 +18,10 @@ module alarm_clock #(
 
   alarm_ctrl_if.in          alarm_ctrl_if,
 
+  posix_time_ctrl_if.out    alarm_time_if,
+
   output                    alarm_o
+
 
 );
 
@@ -33,11 +37,16 @@ logic                              alarm_force_snooze;
 logic                              alarm_snooze_timeout;
 logic                              alarm_unset;
 
-enum logic [2:0] { IDLE_S      = 3'b000,
-                   ALARM_SET_S = 3'b001,
-                   IN_ALARM_S  = 3'b010,
-                   IN_SNOOZE_S = 3'b011 } state;
+logic                              in_alarm;
+logic                              in_snooze;
+logic                              in_alarm_set;
 
+
+localparam SEC_IN_MIN  = 60;
+localparam MIN_IN_HOUR = 60;
+localparam SEC_IN_HOUR = ( SEC_IN_MIN * MIN_IN_HOUR );
+localparam SEC_IN_GMT  = ( SEC_IN_HOUR * GMT ); 
+localparam POS_GMT     = ( GMT > 0 ) ? ( 1 ) : ( 0 );
 
 always_ff @( posedge clk_i or posedge rst_i )
   begin
@@ -47,7 +56,8 @@ always_ff @( posedge clk_i or posedge rst_i )
       begin
         if( alarm_set_time_if.usr_posix_time_en )
           begin
-            start_alarm_time <= alarm_set_time_if.usr_posix_time;
+            start_alarm_time <= ( POS_GMT ) ? ( alarm_set_time_if.usr_posix_time + SEC_IN_GMT ) :
+                                              ( alarm_set_time_if.usr_posix_time - SEC_IN_GMT );
          end
       end
   end
@@ -66,7 +76,7 @@ always_ff @( posedge clk_i or posedge rst_i )
       in_alarm_sec_cnt <= 'd0;
     else
       begin
-        if( state == IN_ALARM_S )
+        if( alarm_o )
           begin
             if( last_tick_i )
               in_alarm_sec_cnt <= in_alarm_sec_cnt + 1;
@@ -82,7 +92,7 @@ always_ff @( posedge clk_i or posedge rst_i )
       in_snooze_sec_cnt <= 'd0;
     else
       begin
-        if( state == IN_SNOOZE_S )
+        if( in_snooze )
           begin
             if( last_tick_i )
               in_snooze_sec_cnt <= in_snooze_sec_cnt + 1;
@@ -105,10 +115,16 @@ alarm_clock_fsm alarm_clock_fsm(
   .alarm_force_snooze_i   ( alarm_force_snooze   ),
   .alarm_snooze_timeout_i ( alarm_snooze_timeout ),
 
-  .state_o                ( state                )
+  .in_alarm_set_o         ( in_alarm_set         ),             
+  .in_snooze_o            ( in_snooze            ),
+  .in_alarm_o             ( in_alarm             )
 
 );
 
-assign alarm_o = ( state == IN_ALARM_S );
+assign alarm_o = in_alarm;
+
+assign alarm_time_if.usr_posix_time    = start_alarm_time;
+assign alarm_time_if.usr_posix_time_en = in_alarm_set;
+
 
 endmodule

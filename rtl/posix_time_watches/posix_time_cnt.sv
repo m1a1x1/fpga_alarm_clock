@@ -1,5 +1,6 @@
 module posix_time_cnt #(
 
+  parameter GMT = 3,
   parameter START_POSIX_TIME = 32'd0,
   parameter CLK_FREQ         = 50
 
@@ -16,6 +17,13 @@ module posix_time_cnt #(
   output              last_tact_o
 
 );
+
+localparam SEC_IN_MIN  = 60;
+localparam MIN_IN_HOUR = 60;
+localparam SEC_IN_HOUR = ( SEC_IN_MIN * MIN_IN_HOUR );
+localparam SEC_IN_GMT  = ( SEC_IN_HOUR * GMT ); 
+localparam POS_GMT     = ( GMT > 0 ) ? ( 1 ) : ( 0 );
+
 
 logic [$clog2( CLK_FREQ*(10**6) )-1:0] tacts_cnt;
 logic                                  last_tact_w;
@@ -35,7 +43,8 @@ always_ff @( posedge clk_i, posedge rst_i )
         if( user_posix_time_en_i )
           begin
             tacts_cnt      <= 0;
-            posix_time_cnt <= user_posix_time_i;
+            posix_time_cnt <= ( POS_GMT ) ? ( user_posix_time_i + SEC_IN_GMT ) :
+                                            ( user_posix_time_i - SEC_IN_GMT );
           end
         else
           begin

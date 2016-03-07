@@ -11,7 +11,9 @@ module alarm_clock_fsm(
   input        alarm_force_snooze_i,
   input        alarm_snooze_timeout_i,
 
-  output [2:0] state_o
+  output       in_alarm_set_o,
+  output       in_snooze_o,
+  output       in_alarm_o
 
 );
 
@@ -87,6 +89,8 @@ always_comb
     endcase
  end
 
-assign state_o = state;
+assign in_alarm_o     = ( state == IN_ALARM_S  );
+assign in_snooze_o    = ( state == IN_SNOOZE_S );
+assign in_alarm_set_o = ( state != IDLE_S      );
 
 endmodule

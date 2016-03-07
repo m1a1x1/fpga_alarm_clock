@@ -27,6 +27,7 @@ logic                  last_tact;
 
 posix_time_cnt #(
 
+  .GMT                   ( GMT                   ),
   .START_POSIX_TIME      ( START_POSIX_TIME      )
 
 ) ptc (
@@ -42,11 +43,7 @@ posix_time_cnt #(
 
 );
 
-posix_time_to_time #(
-  
-  .GMT                    ( GMT                  )
-
-) pt_t_t (
+posix_time_to_time pt_t_t (
 
   .clk_i                  ( clk_i                ),
   .rst_i                  ( rst_i                ),

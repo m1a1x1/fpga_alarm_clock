@@ -1,8 +1,10 @@
 `include "../defines/colors.vh"
 
 module main_alarm_clock#(
-
+ 
+  // Correction of time ( posix time dont care about GMT ).
   parameter GMT        = 3, 
+
   parameter ALARMS_CNT = 7
 
 )(
@@ -26,8 +28,8 @@ module main_alarm_clock#(
 
 ); 
 
-logic [31:0] cur_posix_time;
-logic        last_tick;
+logic [31:0]   cur_posix_time;
+logic          last_tick;
 
 time_if        time_info( );
 
@@ -35,6 +37,8 @@ vga_if         time_vga_if( );
 vga_if         default_vga_if( );
 
 alarm_ctrl_if  tmp_alarm_ctrl_if[ALARMS_CNT-1:0] ();
+
+posix_time_ctrl_if  alarm_time_if[ALARMS_CNT-1:0] ();
 
 posix_time_watches #(
 
@@ -59,6 +63,21 @@ posix_time_watches #(
 
 );
 
+date_if date_info();
+
+date_if alarm_date_info[ALARMS_CNT-1:0] ();
+
+posix_time_to_date date_inst(
+
+  .clk_i                 ( clk_50_i                       ),
+  .rst_i                 ( rst_i                          ),
+
+  .posix_time_i          ( cur_posix_time                 ),
+
+  .date_if               ( date_info                      )
+
+);
+
 genvar i;
 generate
   for( i = 0; i < ALARMS_CNT; i++ ) 
@@ -66,7 +85,8 @@ generate
       assign tmp_alarm_ctrl_if[i].alarm_off_stb    = alarm_ctrl_if.alarm_off_stb;
       assign tmp_alarm_ctrl_if[i].alarm_snooze_stb = alarm_ctrl_if.alarm_snooze_stb;
       alarm_clock #(
-        
+
+        .GMT                  ( GMT                            ), 
         .ALARM_TIME_SEC       ( 10                             ),
         .SNOOZE_TIME_SEC      ( 5                              )
 
@@ -80,30 +100,44 @@ generate
                                                    
         .alarm_set_time_if    ( alarm_set_time_if[i]           ),
         .alarm_ctrl_if        ( tmp_alarm_ctrl_if[i]           ),
-                                                   
+                             
+        .alarm_time_if        ( alarm_time_if[i]               ),                  
         .alarm_o              ( alarm_o[i]                     )          
+
+      );
+
+      posix_time_to_date alarm_date_inst(
+        .clk_i                 ( clk_50_i                        ),
+        .rst_i                 ( rst_i                           ),
+
+        .posix_time_i          ( alarm_time_if[i].usr_posix_time ),
+
+        .date_if               ( alarm_date_info[i]              )
 
       );
     end
 endgenerate
 
-time_draw #(
+time_cal_draw #(
 
-  .BG_COLOR   ( `BLACK ),
-  .TIME_COLOR ( `GREEN )
+  .ALARMS_CNT   ( ALARMS_CNT     ),
+  .BG_COLOR     ( `BLACK         ),
+  .TIME_COLOR   ( `GREEN         )
 
 ) time_draw (
   
-  .clk_50_i     ( clk_50_i   ),
-  .clk_25_i     ( clk_25_i   ),
+  .clk_50_i     ( clk_50_i        ),
+  .clk_25_i     ( clk_25_i        ),
 
-  .rst_i        ( rst_i       ),
+  .rst_i        ( rst_i           ),
 
-  .time_info    ( time_info   ),
+  .time_info    ( time_info       ),
+  .date_info    ( date_info       ),
 
-  .pix_if       ( pixels_if   ),
+  .alarms_info  ( alarm_date_info ),
+  .pix_if       ( pixels_if       ),
 
-  .vga_if       ( time_vga_if )
+  .vga_if       ( time_vga_if     )
 
 );
 

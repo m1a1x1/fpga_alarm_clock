@@ -194,27 +194,27 @@ input 		     [1:0]		GPIO_1_IN;
 //  Signal declarations
 //=======================================================
 //
-logic                  clk_25;
-logic                  rst;
-logic                  rst_w;
+logic                                clk_25;
+logic                                rst;
+logic                                rst_w;
 
-logic [ALARMS_CNT-1:0] alarm;
-logic                  alarm_snooze_stb;
-logic                  alarm_off_stb;
+logic [ALARMS_CNT-1:0]               alarm;
+logic                                alarm_snooze_stb;
+logic                                alarm_off_stb;
 
 pixels_if #( .PIX_X_W ( PIX_X_W ),
-             .PIX_Y_W ( PIX_Y_W ) ) pixels_if();
+             .PIX_Y_W ( PIX_Y_W ) )  pixels_if();
 
-vjtag_if  #( .IR_W    ( IR_W    ) ) vjtag_if();
+vjtag_if  #( .IR_W    ( IR_W    ) )  vjtag_if();
 
 
-posix_time_ctrl_if                  user_time_if();
+posix_time_ctrl_if                   user_time_if();
 
-posix_time_ctrl_if                  alarm_set_time_if [ALARMS_CNT-1:0] ( );
+posix_time_ctrl_if                   alarm_set_time_if [ALARMS_CNT-1:0] ( );
 
-alarm_ctrl_if                       alarm_ctrl_if();
+alarm_ctrl_if                        alarm_ctrl_if();
 
-vga_if                              vga_if();
+vga_if                               vga_if();
 
 
 
@@ -275,7 +275,7 @@ vjtag #(
 
   .tdi                 ( vjtag_if.tdi                ),  // Data from jtag
   .tdo                 ( vjtag_if.tdo                ),  // Data to jtag 
-  .ir_in               ( vjtag_if.ir_in              ),  // Comand 
+  .ir_in               ( vjtag_if.ir_in              ),  // Command 
   .ir_out              ( vjtag_if.ir_out             ), 
   .virtual_state_cdr   ( vjtag_if.virtual_state_cdr  ), 
   .virtual_state_sdr   ( vjtag_if.virtual_state_sdr  ), 

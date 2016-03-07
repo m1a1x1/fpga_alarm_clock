@@ -1,8 +1,4 @@
-module posix_time_to_time #(
-
-   parameter GMT = 3
-
-)(
+module posix_time_to_time (
 
   input                         clk_i,
   input                         rst_i,
@@ -19,8 +15,6 @@ localparam SEC_IN_MIN  = 60;
 localparam MIN_IN_HOUR = 60;
 localparam HOUR_IN_DAY = 24;
 localparam SEC_IN_HOUR = ( SEC_IN_MIN * MIN_IN_HOUR );
-localparam SEC_IN_GMT  = ( SEC_IN_HOUR * GMT ); 
-localparam POS_GMT     = ( GMT > 0 ) ? ( 1 ) : ( 0 );
 
 logic [$clog2(59)-1:0] min;
 logic [$clog2(23)-1:0] hour;
@@ -41,10 +35,7 @@ assign min_o  = ( ( cur_posix_time / SEC_IN_MIN  )  % MIN_IN_HOUR );
 
 always_comb
   begin
-    if( POS_GMT == 1 )
-      hour_o = ( ( ( ( cur_posix_time + SEC_IN_GMT ) / SEC_IN_HOUR ) ) % HOUR_IN_DAY );
-    else
-      hour_o = ( ( ( ( cur_posix_time - SEC_IN_GMT ) / SEC_IN_HOUR ) ) % HOUR_IN_DAY );
+    hour_o = ( ( ( cur_posix_time / SEC_IN_HOUR ) ) % HOUR_IN_DAY );
   end
 
 endmodule

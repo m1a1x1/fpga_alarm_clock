@@ -17,13 +17,15 @@ module posix_time_watches #(
   output logic [$clog2(59)-1:0] sec_o,
 
   output logic [31:0]           posix_time_o,
-  
+  output                        new_posix_time_o,
+ 
   output                        last_tick_o
 
 );
 
 logic [31:0]           posix_time;
 logic                  last_tact;
+logic                  new_posix_time;
 
 posix_time_cnt #(
 
@@ -39,6 +41,8 @@ posix_time_cnt #(
   .user_posix_time_en_i  ( user_posix_time_en_i  ),
 
   .posix_time_o          ( posix_time            ),
+  .new_posix_time_o      ( new_posix_time        ),
+
   .last_tact_o           ( last_tact             )
 
 );
@@ -70,6 +74,8 @@ always_ff @( posedge clk_i, posedge rst_i )
   end
 
 assign posix_time_o = posix_time;
+assign new_posix_time_o = new_posix_time;
+
 assign last_tick_o = last_tact;
 
 endmodule

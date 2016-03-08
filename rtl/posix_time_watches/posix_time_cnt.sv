@@ -13,6 +13,7 @@ module posix_time_cnt #(
   input               user_posix_time_en_i,
 
   output logic [31:0] posix_time_o,
+  output              new_posix_time_o,
 
   output              last_tact_o
 
@@ -28,6 +29,7 @@ localparam POS_GMT     = ( GMT > 0 ) ? ( 1 ) : ( 0 );
 logic [$clog2( CLK_FREQ*(10**6) )-1:0] tacts_cnt;
 logic                                  last_tact_w;
 logic [31:0]                           posix_time_cnt;
+logic                                  posix_time_en_d1;
 
 assign last_tact_w  = ( tacts_cnt == ( CLK_FREQ*(10**6) - 1 ) );
  
@@ -61,7 +63,17 @@ always_ff @( posedge clk_i, posedge rst_i )
       end 
   end
 
+always_ff @( posedge clk_i, posedge rst_i )
+  begin
+    if( rst_i )
+      posix_time_en_d1 <= 1'b0;
+    else
+      posix_time_en_d1 <= user_posix_time_en_i;
+  end
+
 assign posix_time_o = posix_time_cnt;
 assign last_tact_o  = last_tact_w; 
+
+assign new_posix_time_o = posix_time_en_d1; 
 
 endmodule

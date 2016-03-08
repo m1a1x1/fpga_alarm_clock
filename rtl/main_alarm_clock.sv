@@ -30,6 +30,7 @@ module main_alarm_clock#(
 
 logic [31:0]   cur_posix_time;
 logic          last_tick;
+logic          new_posix_time;
 
 time_if        time_info( );
 
@@ -37,6 +38,8 @@ vga_if         time_vga_if( );
 vga_if         default_vga_if( );
 
 alarm_ctrl_if  tmp_alarm_ctrl_if[ALARMS_CNT-1:0] ();
+
+posix_time_ctrl_if  posix_time_if();
 
 posix_time_ctrl_if  alarm_time_if[ALARMS_CNT-1:0] ();
 
@@ -59,6 +62,8 @@ posix_time_watches #(
   .sec_o                ( time_info.sec                  ),
 
   .posix_time_o         ( cur_posix_time                 ),
+  .new_posix_time_o     ( new_posix_time                 ),
+
   .last_tick_o          ( last_tick                      )
 
 );
@@ -67,12 +72,15 @@ date_if date_info();
 
 date_if alarm_date_info[ALARMS_CNT-1:0] ();
 
+assign posix_time_if.usr_posix_time = cur_posix_time;
+assign posix_time_if.usr_posix_time_en = new_posix_time;
+
 posix_time_to_date date_inst(
 
   .clk_i                 ( clk_50_i                       ),
   .rst_i                 ( rst_i                          ),
 
-  .posix_time_i          ( cur_posix_time                 ),
+  .posix_time_if         ( posix_time_if                  ),
 
   .date_if               ( date_info                      )
 
@@ -105,7 +113,7 @@ generate
         .alarm_o              ( alarm_o[i]                     )          
 
       );
-
+     /*
       posix_time_to_date alarm_date_inst(
         .clk_i                 ( clk_50_i                        ),
         .rst_i                 ( rst_i                           ),
@@ -115,6 +123,7 @@ generate
         .date_if               ( alarm_date_info[i]              )
 
       );
+     */
     end
 endgenerate
 

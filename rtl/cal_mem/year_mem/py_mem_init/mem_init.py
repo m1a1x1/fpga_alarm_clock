@@ -1,0 +1,48 @@
+from PIL import Image
+
+MIF_HEAD = """DEPTH = 8192;
+WIDTH = 1;
+ADDRESS_RADIX = HEX;
+DATA_RADIX = BIN;
+
+CONTENT
+BEGIN"""
+
+MIF_ENDING = "END;"
+
+ING_DIR = "numbers/"
+
+def get_string( im ):
+
+  raw = ""
+  mem = ""
+
+  for i in range( 300 ):
+    print( raw )
+    if( i%30 == 0 ):
+      print ("----------------------------------------" ) 
+    print( raw )
+    raw=""
+    for j in range( 27 ):
+      pix = im.getpixel( (j, i) )
+      if( pix[0] > 120 ):
+        color = 0;
+      else:
+        color = 1;
+      raw = raw + str(color)
+      mem = mem + hex(27*i+j)[2:] + " : " + str(color) + ";\n"
+
+  return( mem )
+
+def write_file( fname, header, content, ending):
+  f = open(fname, 'w')
+  f.write( header + "\n\n" + content + "\n\n" + ending)
+  f.close()
+
+all_img = [0]
+
+all_img[0] = Image.open(ING_DIR+"numbers.jpg")
+
+mem_init_data = get_string( all_img[0] )
+mem_fname = "../" + "numbers" + ".mif"
+write_file( mem_fname, MIF_HEAD, mem_init_data, MIF_ENDING)

@@ -57,15 +57,6 @@ logic  [`DOT_W-1:0][`DOT_H-1:0] dot;
 logic  [`POS_CNT-1:0][NUM_W-1:0] all_nums_unsync;
 logic  [`POS_CNT-1:0][NUM_W-1:0] all_nums_sync;
 
-logic  [NUM_W-1:0]  hour_left_sync;  
-logic  [NUM_W-1:0]  hour_right_sync; 
-
-logic  [NUM_W-1:0]  min_left_sync;   
-logic  [NUM_W-1:0]  min_right_sync;  
-
-logic  [NUM_W-1:0]  sec_left_sync;   
-logic  [NUM_W-1:0]  sec_right_sync;  
-
 logic  [NUM_W-1:0]  cur_num;  
 
 logic  [2:0]        cal_pix_color;
@@ -236,7 +227,8 @@ cal_draw #(
   .FRAME_COLOR   ( `WIGHT       ),
   .BG_COLOR      ( BG_COLOR     ),
   .TEXT_COLOR    ( TIME_COLOR   ),
-  .CUR_DAY_COLOR ( `BLUE        )
+  .CUR_DAY_COLOR ( `BLUE        ),
+  .WEEKEND_COLOR ( `RED         )
 
 ) cal_draw (
   

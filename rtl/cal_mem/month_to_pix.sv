@@ -4,15 +4,21 @@ function string month_path_to_mif(
 
 );
   string mif_path = "../rtl/cal_mem/month_mem/";
-  string num;
-  case( month_number )
-    0 : num = "0001";
-    1 : num = "0203";
-    2 : num = "0405";
-    3 : num = "0607";
-    4 : num = "0809";
-    5 : num = "1111";
-  endcase
+  string num = "0000";
+  
+  if( month_number == 0 )
+    num = "0001";
+  if( month_number == 1 )
+    num = "0203";
+  if( month_number == 2 )
+    num = "0405";
+  if( month_number == 3 )
+    num = "0607";
+  if( month_number == 4 )
+    num = "0809";
+  if( month_number == 5 )
+    num = "1011";
+
   mif_path = {mif_path, num,".mif"};
 
   return mif_path;
@@ -53,16 +59,18 @@ logic [MONTH_CNT-1:0]  pix_all;
 assign in_offset = ( pos_x_i < OFFSET ) || ( pos_x_i >= ( OFFSET + MAX_X ) );
 
 assign pix_addr[0] = ( pos_y_i * MAX_X ) + ( pos_x_i - OFFSET );
+
 assign pix_addr[1] = ( ( ( pos_y_i * MAX_X ) + ( pos_x_i - OFFSET ) ) + SECOND_MONTH_OFFSET );
 
 genvar i;
 generate
-  for( i = 0; i < MONTH_CNT / 2; i++ ) 
+  for( i = 0; i < ( MONTH_CNT / 2); i++ ) 
     begin: num_mem
    
       two_month_mem #(
 
         .MIF_FNAME ( month_path_to_mif( i ) )
+        //.MIF_FNAME ( "../rtl/cal_mem/month_mem/0001.mif" )
 
       ) month_mem_inst (
 

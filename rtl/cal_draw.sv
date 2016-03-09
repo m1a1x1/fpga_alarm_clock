@@ -61,6 +61,18 @@ logic                    days_lable_pix;
 
 logic  [2:0]             table_color;
 
+logic  [$clog2(7)-1:0]    cur_month_first_day;
+logic  [$clog2(31)-1:0]   cur_month_days_cnt;
+
+logic  [$clog2(31)-1:0]   cur_day_in_month;
+
+logic  [4:0][$clog2(3000)-1:0] unsync_date_info;
+logic  [4:0][$clog2(3000)-1:0] sync_date_info;
+
+
+
+
+      
 assign cur_pos = `CUR_POS_CAL(pos_x_i,pos_y_i);
 
 assign pos_x = ( ( cur_pos == `YEAR      ) ? ( pos_x_i - YEAR_L_BORDER           ) : 
@@ -155,38 +167,35 @@ always_comb
     endcase
   end
 
+assign unsync_date_info[0] = date_info.month_first_day;
+assign unsync_date_info[1] = date_info.month_days_cnt;
+assign unsync_date_info[2] = date_info.day_in_month;   
+assign unsync_date_info[3] = date_info.month;
+assign unsync_date_info[4] = date_info.year;
 
 sync #(
 
-  .ARRAY_W        ( 0          ),
-  .DATA_W         ( $clog2(12) ),
-  .SYNC_D         ( 3          )
-
-) month_sync (
-
-  .clk_sync_i     ( clk_25_i        ),
-  .rst_i          ( rst_i           ),
-
-  .unsync_data_i  ( date_info.month ),           
-  .sync_data_o    ( cur_month       )           
-
-);
-
-sync #(
-
-  .ARRAY_W        ( 0               ),
-  .DATA_W         ( $clog2(3000)    ),
-  .SYNC_D         ( 3               )
+  .ARRAY_W        ( 5                ),
+  .DATA_W         ( $clog2(3000)     ),
+  .SYNC_D         ( 3                )
 
 ) year_sync (
 
-  .clk_sync_i     ( clk_25_i        ),
-  .rst_i          ( rst_i           ),
+  .clk_sync_i     ( clk_25_i         ),
+  .rst_i          ( rst_i            ),
 
-  .unsync_data_i  ( date_info.year  ),           
-  .sync_data_o    ( cur_year        )           
+  .unsync_data_i  ( unsync_date_info ),           
+  .sync_data_o    ( sync_date_info   )           
 
 );
+
+assign cur_month_first_day = sync_date_info[0];
+assign cur_month_days_cnt = sync_date_info[1];
+assign cur_day_in_month = sync_date_info[2];
+assign cur_month = sync_date_info[3];
+assign cur_year  = sync_date_info[4];
+
+
 
 month_to_pix #(
 
@@ -267,18 +276,18 @@ table_draw #(
 
 ) table_draw (
 
-  .clk_i             ( clk_25_i                  ),
-  .rst_i             ( rst_i                     ),
+  .clk_i             ( clk_25_i            ),
+  .rst_i             ( rst_i               ),
 
-  .month_first_day_i ( date_info.month_first_day ),
-  .month_days_cnt_i  ( date_info.month_days_cnt  ),
+  .month_first_day_i ( cur_month_first_day ),
+  .month_days_cnt_i  ( cur_month_days_cnt  ),
 
-  .day_in_month_i    ( date_info.day_in_month    ),
+  .day_in_month_i    ( cur_day_in_month    ),
 
-  .pos_x_i           ( pos_x                     ),
-  .pos_y_i           ( pos_y                     ),
+  .pos_x_i           ( pos_x               ),
+  .pos_y_i           ( pos_y               ),
   
-  .color_o           ( table_color               )
+  .color_o           ( table_color         )
 
 );
 
